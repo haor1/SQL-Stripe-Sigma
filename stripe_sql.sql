@@ -9,7 +9,8 @@ select
   pr.name product_name, cx.name, cx.email,
   ch.amount_refunded as amount_refunded, 
   CASE WHEN ch.amount_refunded = 0 THEN 'no refund'
-  WHEN i.total <> ch.amount_refunded THEN 'partial refund' ELSE 'full refund'  END AS refunded_status
+  WHEN i.total <> ch.amount_refunded THEN 'partial refund' 
+  ELSE 'full refund' END AS refunded_status
 from invoices i
 join invoice_line_items il
   on il.invoice_id = i.id
