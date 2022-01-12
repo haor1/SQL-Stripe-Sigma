@@ -1,28 +1,38 @@
 --SQL query that I wrote for a User to generate a custom report in Stripe Sigma
 
-select 
-  i.id invoice_id,
-  s.id subscription_id,
-  i.total,
-  il.plan_id,
-  pri.nickname price_nickname,
-  pr.name product_name, cx.name, cx.email,
-  ch.amount_refunded as amount_refunded, 
-  CASE WHEN ch.amount_refunded = 0 THEN 'no refund'
-  WHEN i.total <> ch.amount_refunded THEN 'partial refund' 
-  ELSE 'full refund' END AS refunded_status
-from invoices i
-join invoice_line_items il
-  on il.invoice_id = i.id
-join subscriptions s
-  on s.plan_id = il.plan_id and s.id = i.subscription_id
-join prices pri
-  on pri.id = il.plan_id
-join products pr
-  on pr.id = pri.product_id
-join customers cx
-  on cx.id = i.customer_id
-join charges ch
-  on ch.invoice_id = i.id
-where i.status = 'paid'
+select
+ch.id,
+ch.created,
+ch.description,
+ch.amount,
+ch.amount_refunded as amount_refunded,
+CASE
+WHEN ch.amount_refunded = 0 THEN 'no refund'
+WHEN ch.amount <> ch.amount_refunded THEN 'partial refund'
+ELSE 'full refund'
+END AS refunded_status,
+--------
+i.id as invoice_id,
+i.subscription_id,
+i.number as invoice_number,
+cx.name,
+cx.email,
+s.plan_id,
+pri.nickname
+,pr.name as price_name
+--------
+from
+charges ch
+--------
+left join invoices i on ch.id = i.charge_id
+left join customers cx on ch.customer_id = cx.id
+left join subscriptions s on i.subscription_id = s.id
+left join prices pri on s.price_id = pri.id
+left join products pr on pri.product_id = pr.id
+--------
+where
+ch.created < date('2022-01-01')
+and ch.status = 'succeeded'
+order by
+created desc
 
