@@ -24,11 +24,11 @@ pri.nickname
 FROM
 charges ch
 --------
-left JOIN invoices i ON ch.id = i.charge_id
-left JOIN customers cx ON ch.customer_id = cx.id
-left JOIN subscriptions s ON i.subscription_id = s.id
-left JOIN prices pri ON s.price_id = pri.id
-left JOIN products pr ON pri.product_id = pr.id
+LEFT JOIN invoices i ON ch.id = i.charge_id
+LEFT JOIN customers cx ON ch.customer_id = cx.id
+LEFT JOIN subscriptions s ON i.subscription_id = s.id
+LEFT JOIN prices pri ON s.price_id = pri.id
+LEFT JOIN products pr ON pri.product_id = pr.id
 --------
 WHERE
 ch.created < date('2022-01-01')
